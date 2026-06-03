@@ -468,8 +468,8 @@ textarea.form-input{min-height:80px;resize:none}
           <!-- Step 1: Service type -->
           <div id="step1" style="display:none">
             <div class="step-title">Select Appointment Type</div>
-            <button class="appt-card" onclick="selectAppt('NHS Eye Examination','45 min')"><div class="ac-left"><span class="ac-emoji">👁</span><div><div class="ac-name">NHS Eye Examination</div><div class="ac-dur">45 min · Funded</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
-            <button class="appt-card" onclick="selectAppt('Private Eye Examination','60 min')"><div class="ac-left"><span class="ac-emoji">🔬</span><div><div class="ac-name">Private Eye Examination</div><div class="ac-dur">60 min · £65</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('NHS Eye Examination','60 min')"><div class="ac-left"><span class="ac-emoji">👁</span><div><div class="ac-name">NHS Eye Examination</div><div class="ac-dur">45 min · Funded</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('Private Eye Examination','60 min')"><div class="ac-left"><span class="ac-emoji">🔬</span><div><div class="ac-name">Private Eye Examination</div><div class="ac-dur">60 min · £95 (FREE with Vision Club Membership)</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
             <button class="appt-card" onclick="selectAppt('Contact Lens Fitting','45 min')"><div class="ac-left"><span class="ac-emoji">💧</span><div><div class="ac-name">Contact Lens Fitting</div><div class="ac-dur">45 min</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
             <button class="appt-card" onclick="selectAppt('Myopia Management','60 min')"><div class="ac-left"><span class="ac-emoji">👶</span><div><div class="ac-name">Myopia Management</div><div class="ac-dur">60 min</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
             <button class="appt-card" onclick="selectAppt('Dry Eye Clinic','45 min')"><div class="ac-left"><span class="ac-emoji">💡</span><div><div class="ac-name">Dry Eye Clinic</div><div class="ac-dur">45 min</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
@@ -488,19 +488,19 @@ textarea.form-input{min-height:80px;resize:none}
             <div class="form-label">Preferred Time</div>
             <div class="time-grid" id="timeGrid">
               <button class="time-btn" onclick="selectTime(this,'09:00')">09:00</button>
-              <button class="time-btn" onclick="selectTime(this,'09:30')">09:30</button>
+              <!-- <button class="time-btn" onclick="selectTime(this,'09:30')">09:30</button> -->
               <button class="time-btn" onclick="selectTime(this,'10:00')">10:00</button>
-              <button class="time-btn" onclick="selectTime(this,'10:30')">10:30</button>
+              <!-- <button class="time-btn" onclick="selectTime(this,'10:30')">10:30</button> -->
               <button class="time-btn" onclick="selectTime(this,'11:00')">11:00</button>
-              <button class="time-btn" onclick="selectTime(this,'11:30')">11:30</button>
+              <!-- <button class="time-btn" onclick="selectTime(this,'11:30')">11:30</button> -->
               <button class="time-btn" onclick="selectTime(this,'12:00')">12:00</button>
-              <button class="time-btn" onclick="selectTime(this,'12:30')">12:30</button>
+              <!-- <button class="time-btn" onclick="selectTime(this,'12:30')">12:30</button> -->
               <button class="time-btn" onclick="selectTime(this,'14:00')">14:00</button>
-              <button class="time-btn" onclick="selectTime(this,'14:30')">14:30</button>
+              <!-- <button class="time-btn" onclick="selectTime(this,'14:30')">14:30</button> -->
               <button class="time-btn" onclick="selectTime(this,'15:00')">15:00</button>
-              <button class="time-btn" onclick="selectTime(this,'15:30')">15:30</button>
+              <!-- <button class="time-btn" onclick="selectTime(this,'15:30')">15:30</button> -->
               <button class="time-btn" onclick="selectTime(this,'16:00')">16:00</button>
-              <button class="time-btn" onclick="selectTime(this,'16:30')">16:30</button>
+              <!-- <button class="time-btn" onclick="selectTime(this,'16:30')">16:30</button> -->
               <button class="time-btn" onclick="selectTime(this,'17:00')">17:00</button>
             </div>
             <div class="form-label">Patient Type</div>
@@ -567,8 +567,8 @@ textarea.form-input{min-height:80px;resize:none}
             <h2 class="section-h2">Complete Eye Care</h2>
             <p style="font-size:.82rem;font-weight:300;color:#8a9bb5;line-height:1.7;margin-top:6px;margin-bottom:2px">A full spectrum of vision and eye health services for the whole Bristol community.</p>
           </div>
-          <div class="service-item"><span class="svc-emoji">👁</span><div><div class="svc-title">NHS Eye Examinations</div><div class="svc-desc">Fully funded NHS sight tests for eligible patients, with thorough assessments of vision and eye health.</div></div></div>
-          <div class="service-item"><span class="svc-emoji">🔬</span><div><div class="svc-title">Private Eye Examinations</div><div class="svc-desc">Advanced diagnostics including retinal imaging and detailed assessment of eye health conditions.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">👁</span><div><div class="svc-title">NHS Eye Examinations</div><div class="svc-desc">Fully funded NHS sight tests for eligible patients, with thorough assessments of vision and eye health. Advanced OCT as standard.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">🔬</span><div><div class="svc-title">Private Eye Examinations</div><div class="svc-desc">Advanced diagnostics including retinal imaging and detailed assessment of eye health conditions. Advanced OCT as standard.</div></div></div>
           <div class="service-item"><span class="svc-emoji">🕶</span><div><div class="svc-title">Designer Eyewear</div><div class="svc-desc">Curated collection from everyday essentials to statement designer pieces, fitted with precision.</div></div></div>
           <div class="service-item"><span class="svc-emoji">💧</span><div><div class="svc-title">Contact Lens Fitting</div><div class="svc-desc">Full fitting service including complex prescriptions, specialist lenses for dry eye and keratoconus.</div></div></div>
           <div class="service-item"><span class="svc-emoji">👶</span><div><div class="svc-title">Myopia Management</div><div class="svc-desc">Evidence-based techniques to slow myopia progression and protect long-term vision.</div></div></div>
