@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clifton Vision — Mobile App Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;background:#060e1a}
+body{font-family:'Jost',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px 20px 60px;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(201,168,76,.06) 0%,transparent 70%),#060e1a}
+
+/* ── Page header ── */
+.page-title{text-align:center;margin-bottom:36px}
+.page-title h1{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:300;color:#f5f0e8;letter-spacing:.01em}
+.page-title h1 span{color:#c9a84c;font-style:italic}
+.page-title p{font-size:.9rem;font-weight:300;color:#8a9bb5;margin-top:6px;letter-spacing:.06em}
+
+/* ── Phone shell ── */
+.phone-wrap{position:relative;width:375px;height:780px}
+.phone-shell{
+  position:absolute;inset:-14px;
+  border-radius:52px;
+  background:linear-gradient(145deg,#1a1a2e,#0d0d1a);
+  box-shadow:
+    0 0 0 1.5px rgba(255,255,255,.08),
+    inset 0 0 0 1px rgba(255,255,255,.04),
+    0 40px 120px rgba(0,0,0,.8),
+    0 0 60px rgba(201,168,76,.06);
+}
+.phone-shell::before{
+  content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  width:120px;height:30px;background:#0a0a14;border-radius:0 0 18px 18px;
+  box-shadow:inset 0 -4px 8px rgba(0,0,0,.5);z-index:10;
+}
+.phone-shell::after{
+  content:'';position:absolute;top:22px;left:50%;transform:translateX(-50%);
+  width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle,#1e2840,#0d0d1a);
+  border:1.5px solid rgba(255,255,255,.1);z-index:11;
+}
+/* Side buttons */
+.btn-vol-up,.btn-vol-dn,.btn-power{position:absolute;background:#1a1a2e;border-radius:3px}
+.btn-vol-up{left:-16px;top:120px;width:4px;height:40px}
+.btn-vol-dn{left:-16px;top:170px;width:4px;height:40px}
+.btn-power{right:-16px;top:140px;width:4px;height:60px}
+
+/* ── Screen area ── */
+.screen{
+  position:absolute;inset:0;border-radius:40px;overflow:hidden;
+  background:#0d1b2e;
+}
+.status-bar{
+  height:44px;background:#07111f;display:flex;align-items:flex-end;
+  justify-content:space-between;padding:0 20px 8px;flex-shrink:0;
+}
+.status-time{font-size:.75rem;font-weight:500;color:#f5f0e8;letter-spacing:.02em}
+.status-icons{display:flex;align-items:center;gap:4px;color:#f5f0e8}
+.status-icons svg{opacity:.85}
+
+/* ── Top bar ── */
+.top-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;background:rgba(7,17,31,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(201,168,76,.18);flex-shrink:0;
+}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;color:#f5f0e8}
+.logo span{color:#c9a84c}
+.location-tag{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:#8a9bb5;font-weight:300}
+
+/* ── Scrollable content ── */
+.screen-body{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.screen-body::-webkit-scrollbar{display:none}
+
+/* ── Bottom nav ── */
+.bottom-nav{
+  display:flex;align-items:stretch;
+  background:rgba(7,17,31,.95);backdrop-filter:blur(16px);
+  border-top:1px solid rgba(201,168,76,.18);flex-shrink:0;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:10px 0 12px;background:none;border:none;cursor:pointer;
+  color:#8a9bb5;font-family:'Jost',sans-serif;transition:color .2s;
+}
+.nav-btn.active{color:#c9a84c}
+.nav-btn span{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:300}
+.nav-btn.active span{font-weight:500}
+
+/* ── Screens container ── */
+.screen-root{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+}
+.screen-page{display:none;flex-direction:column;flex:1;overflow:hidden}
+.screen-page.active{display:flex}
+
+/* ── Common elements ── */
+.eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.eyebrow-line{width:28px;height:1px;background:#c9a84c;opacity:.6}
+.eyebrow-text{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:#c9a84c;font-weight:400}
+.section-h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:#f5f0e8;line-height:1.1}
+.gold-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);opacity:.4}
+.muted{color:#8a9bb5}
+
+/* ── HOME screen ── */
+.hero-home{
+  position:relative;padding:32px 20px 28px;overflow:hidden;
+  background:linear-gradient(160deg,#0d1b2e 0%,#152540 60%,#0d1b2e 100%);
+}
+.hero-ring{
+  position:absolute;right:-50px;top:50%;transform:translateY(-50%);
+  width:220px;height:220px;border-radius:50%;
+  border:1px solid rgba(201,168,76,.12);
+  animation:pulseRing 4s ease-in-out infinite;
+}
+.hero-ring2{
+  position:absolute;right:-10px;top:50%;transform:translateY(-50%);
+  width:140px;height:140px;border-radius:50%;
+  border:1px dashed rgba(201,168,76,.07);
+}
+.hero-grid{
+  position:absolute;inset:0;opacity:.025;
+  background-image:linear-gradient(#c9a84c 1px,transparent 1px),linear-gradient(90deg,#c9a84c 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:300;line-height:1.05;color:#fff;margin-bottom:8px}
+.hero-h1 em{font-style:italic;color:#e2c47a;display:block}
+.hero-p{font-size:.82rem;font-weight:300;line-height:1.75;color:#8a9bb5;margin-bottom:22px;max-width:220px}
+.btn-gold{
+  display:inline-flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,#c9a84c,#e2c47a);
+  color:#0d1b2e;border:none;border-radius:3px;padding:11px 20px;
+  font-family:'Jost',sans-serif;font-weight:500;font-size:.78rem;
+  letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
+}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(201,168,76,.18)}
+.stat-cell{background:#0d1b2e;padding:14px 12px;text-align:center}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;color:#c9a84c}
+.stat-lbl{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#8a9bb5;margin-top:2px;font-weight:300}
+.quick-links{padding:20px 16px 0}
+.quick-link{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#152540;border:1px solid rgba(201,168,76,.18);
+  border-radius:8px;padding:14px 16px;cursor:pointer;width:100%;margin-bottom:3px;
+}
+.ql-left{display:flex;align-items:center;gap:12px}
+.ql-emoji{font-size:1.3rem}
+.ql-title{font-size:.9rem;font-weight:400;color:#f5f0e8;text-align:left}
+.ql-sub{font-size:.73rem;font-weight:300;color:#8a9bb5;margin-top:1px;text-align:left}
+.optiswiss-card{
+  margin:18px 16px;padding:18px;
+  background:linear-gradient(135deg,#0a1628,#152540);
+  border:1px solid rgba(201,168,76,.2);border-left:3px solid #c9a84c;border-radius:8px;
+}
+.os-label{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:#c9a84c;margin-bottom:4px}
+.os-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:300;color:#f5f0e8;margin-bottom:6px}
+.os-desc{font-size:.78rem;font-weight:300;color:#8a9bb5;line-height:1.6}
+
+/* ── SERVICES screen ── */
+.services-header{padding:28px 16px 18px}
+.service-item{
+  display:flex;align-items:flex-start;gap:12px;
+  background:#152540;border:1px solid rgba(201,168,76,.15);
+  border-radius:8px;padding:15px 14px;margin:0 16px 3px;
+}
+.svc-emoji{font-size:1.5rem;flex-shrink:0;margin-top:1px}
+.svc-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:400;color:#f5f0e8;margin-bottom:3px}
+.svc-desc{font-size:.75rem;font-weight:300;color:#8a9bb5;line-height:1.6}
+.book-cta-bar{padding:18px 16px 20px}
+
+/* ── CONTACT screen ── */
+.contact-header{padding:28px 16px 18px}
+.contact-item{
+  display:flex;align-items:flex-start;gap:14px;
+  background:#152540;border:1px solid rgba(201,168,76,.15);
+  border-radius:8px;padding:16px;margin:0 16px 3px;cursor:pointer;
+}
+.ci-icon{color:#c9a84c;flex-shrink:0;margin-top:2px}
+.ci-label{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#8a9bb5;margin-bottom:4px}
+.ci-value{font-size:.88rem;font-weight:300;color:#f5f0e8;line-height:1.65;white-space:pre-line}
+.map-tile{
+  margin:16px;height:120px;border-radius:8px;overflow:hidden;
+  background:linear-gradient(145deg,#0e2240,#1e3454);
+  border:1px solid rgba(201,168,76,.18);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;
+}
+.reg-footer{padding:14px 16px 20px;border-top:1px solid rgba(201,168,76,.15);margin-top:10px}
+.reg-text{font-size:.65rem;color:rgba(138,155,181,.45);font-weight:300;line-height:1.8}
+
+/* ── BOOK screen ── */
+.book-header{padding:20px 16px 16px;flex-shrink:0;background:#0d1b2e;border-bottom:1px solid rgba(201,168,76,.15)}
+.step-row{display:flex;align-items:center;margin-bottom:0}
+.step-dot{
+  width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:500;flex-shrink:0;
+}
+.step-dot.done{background:#c9a84c;color:#0d1b2e}
+.step-dot.active{background:transparent;border:1.5px solid #c9a84c;color:#c9a84c}
+.step-dot.inactive{background:transparent;border:1.5px solid rgba(201,168,76,.25);color:#8a9bb5}
+.step-connector{flex:1;height:1px}
+.step-connector.done{background:#c9a84c}
+.step-connector.inactive{background:rgba(201,168,76,.2)}
+.step-labels{display:flex;margin-top:5px}
+.step-label{flex:1;text-align:center;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:#8a9bb5}
+.step-label.active{color:#c9a84c;font-weight:500}
+
+.book-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 16px;scrollbar-width:none}
+.book-content::-webkit-scrollbar{display:none}
+.step-title{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#8a9bb5;margin-bottom:12px}
+
+/* Appt type cards */
+.appt-card{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#152540;border:1px solid rgba(201,168,76,.18);
+  border-radius:8px;padding:13px 14px;margin-bottom:3px;cursor:pointer;width:100%;
+  transition:background .15s,border-color .15s;
+}
+.appt-card:hover,.appt-card.selected{background:rgba(201,168,76,.08);border-color:#c9a84c}
+.ac-left{display:flex;align-items:center;gap:12px}
+.ac-emoji{font-size:1.3rem}
+.ac-name{font-size:.88rem;font-weight:400;color:#f5f0e8;text-align:left}
+.ac-dur{font-size:.72rem;font-weight:300;color:#8a9bb5;text-align:left;margin-top:2px}
+
+/* Date/time step */
+.selected-badge{
+  background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);
+  border-radius:5px;padding:8px 12px;margin-bottom:18px;
+  font-size:.82rem;color:#c9a84c;font-weight:300;
+}
+.form-label{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:#8a9bb5;margin-bottom:6px;font-weight:400}
+.form-input{
+  width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.22);
+  color:#f5f0e8;border-radius:4px;padding:11px 13px;
+  font-family:'Jost',sans-serif;font-size:.95rem;font-weight:300;outline:none;
+  appearance:none;-webkit-appearance:none;margin-bottom:16px;
+}
+.form-input:focus{border-color:#c9a84c;background:rgba(201,168,76,.04)}
+.time-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:16px}
+.time-btn{
+  background:#152540;border:1px solid rgba(201,168,76,.2);color:#f5f0e8;
+  border-radius:4px;padding:9px 0;font-family:'Jost',sans-serif;
+  font-size:.8rem;font-weight:300;cursor:pointer;transition:all .15s;
+}
+.time-btn.selected{background:#c9a84c;border-color:#c9a84c;color:#0d1b2e;font-weight:500}
+
+/* Details step */
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea.form-input{min-height:80px;resize:none}
+
+/* Confirm step */
+.confirm-card{
+  background:#152540;border:1px solid rgba(201,168,76,.18);
+  border-radius:8px;overflow:hidden;margin-bottom:14px;
+}
+.confirm-row{display:flex;gap:10px;padding:11px 14px}
+.cr-label{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#8a9bb5;font-weight:400;width:70px;flex-shrink:0;padding-top:2px}
+.cr-value{font-size:.85rem;font-weight:300;color:#f5f0e8;flex:1;word-break:break-word}
+.confirm-note{font-size:.72rem;font-weight:300;color:#8a9bb5;line-height:1.65;margin-top:12px}
+
+/* ── Book nav bar ── */
+.book-nav{
+  display:flex;gap:10px;padding:14px 16px 18px;
+  border-top:1px solid rgba(201,168,76,.15);flex-shrink:0;background:#0d1b2e;
+}
+.btn-back{
+  flex:1;background:transparent;border:1px solid rgba(201,168,76,.25);
+  color:#f5f0e8;border-radius:4px;padding:13px;
+  font-family:'Jost',sans-serif;font-weight:300;font-size:.78rem;
+  letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+}
+.btn-next{
+  flex:2;background:linear-gradient(135deg,#c9a84c,#e2c47a);
+  color:#0d1b2e;border:none;border-radius:4px;padding:13px;
+  font-family:'Jost',sans-serif;font-weight:500;font-size:.78rem;
+  letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-next:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── Success screen ── */
+.success-screen{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 24px;gap:18px;
+}
+.success-icon{
+  width:68px;height:68px;border-radius:50%;
+  background:rgba(201,168,76,.12);
+  display:flex;align-items:center;justify-content:center;color:#c9a84c;
+}
+.success-h{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:#f5f0e8;text-align:center}
+.success-p{font-size:.85rem;font-weight:300;color:#8a9bb5;line-height:1.7;text-align:center;max-width:260px}
+.success-summary{
+  background:#152540;border:1px solid rgba(201,168,76,.2);
+  border-radius:8px;padding:15px 18px;width:100%;
+}
+.ss-label{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#c9a84c;margin-bottom:8px}
+.ss-line{font-size:.85rem;font-weight:300;color:#f5f0e8;line-height:1.8}
+.btn-outline{
+  background:transparent;border:1px solid rgba(201,168,76,.25);
+  color:#f5f0e8;border-radius:4px;padding:12px 28px;
+  font-family:'Jost',sans-serif;font-weight:300;font-size:.78rem;
+  letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+}
+
+/* ── Toast ── */
+.toast{
+  position:absolute;bottom:80px;left:14px;right:14px;z-index:999;
+  background:#1e3454;border-radius:10px;padding:13px 15px;
+  display:flex;align-items:flex-start;gap:11px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  transform:translateY(130%);opacity:0;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border:1px solid #c9a84c}
+.toast.error{border:1px solid #e05c5c}
+.toast-icon{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.toast.success .toast-icon{background:rgba(201,168,76,.15);color:#c9a84c}
+.toast.error .toast-icon{background:rgba(224,92,92,.15);color:#e05c5c}
+.toast-body strong{display:block;font-size:.85rem;font-weight:500;color:#f5f0e8;margin-bottom:2px}
+.toast-body span{font-size:.78rem;font-weight:300;color:#8a9bb5;line-height:1.5}
+
+/* ── Chevron ── */
+.chev{opacity:.45}
+
+/* ── Animations ── */
+@keyframes pulseRing{0%,100%{opacity:.12;transform:translateY(-50%) scale(1)}50%{opacity:.25;transform:translateY(-50%) scale(1.04)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .3s ease forwards}
+
+/* ── Page legend ── */
+.legend{margin-top:30px;text-align:center;max-width:400px}
+.legend p{font-size:.8rem;font-weight:300;color:#8a9bb5;line-height:1.7}
+.legend strong{color:#c9a84c;font-weight:400}
+
+/* ── Responsive outer layout ── */
+@media(max-width:440px){
+  .phone-wrap{width:100%;max-width:375px;height:calc(100vw * 2.08)}
+  body{padding:20px 0 40px}
+  .phone-shell{display:none}
+  .btn-vol-up,.btn-vol-dn,.btn-power{display:none}
+  .screen{border-radius:0}
+}
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <h1>Clifton <span>Vision</span></h1>
+  <p>Interactive Mobile App Preview</p>
+</div>
+
+<div class="phone-wrap">
+  <!-- Phone decorations -->
+  <div class="phone-shell"></div>
+  <div class="btn-vol-up"></div>
+  <div class="btn-vol-dn"></div>
+  <div class="btn-power"></div>
+
+  <!-- Screen -->
+  <div class="screen" id="screen">
+    <div class="screen-root">
+
+      <!-- Status bar -->
+      <div class="status-bar">
+        <span class="status-time" id="statusTime">9:41</span>
+        <div class="status-icons">
+          <svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor"><rect x="0" y="5" width="3" height="6" rx="1" opacity=".4"/><rect x="4" y="3" width="3" height="8" rx="1" opacity=".6"/><rect x="8" y="1" width="3" height="10" rx="1" opacity=".8"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="15" height="11" viewBox="0 0 24 12" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="1" y="1" width="18" height="10" rx="2"/><path d="M23 4v4a2 2 0 000-4z" fill="currentColor" stroke="none" opacity=".5"/><rect x="3" y="3" width="11" height="6" rx="1" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <!-- Top bar -->
+      <div class="top-bar">
+        <div class="logo">Clifton <span>Vision</span></div>
+        <div class="location-tag">Bristol · Est. 2026</div>
+      </div>
+
+      <!-- ═══ HOME page ═══ -->
+      <div class="screen-page active" id="page-home">
+        <div class="screen-body">
+          <!-- Hero -->
+          <div class="hero-home">
+            <div class="hero-ring"></div>
+            <div class="hero-ring2"></div>
+            <div class="hero-grid"></div>
+            <div style="position:relative;z-index:1">
+              <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">Clifton, Bristol · Est. 2026 · OptiSwiss Partner</span></div>
+              <h1 class="hero-h1">Clarity,<em>crafted for you.</em></h1>
+              <p class="hero-p">Bristol's premier independent optician. Exceptional eye care and luxury eyewear in the heart of Clifton.</p>
+              <button class="btn-gold" onclick="switchTab('book')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                Book Appointment
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="stats-grid">
+            <div class="stat-cell"><div class="stat-num">NHS &</div><div class="stat-lbl">Private Care</div></div>
+            <div class="stat-cell"><div class="stat-num">5★</div><div class="stat-lbl">Patient Reviews</div></div>
+            <div class="stat-cell"><div class="stat-num">All</div><div class="stat-lbl">Ages Welcome</div></div>
+            <div class="stat-cell"><div class="stat-num">Same</div><div class="stat-lbl">Day Appointments</div></div>
+          </div>
+
+          <!-- Quick links -->
+          <div class="quick-links">
+            <div class="eyebrow" style="margin-top:16px"><div class="eyebrow-line"></div><span class="eyebrow-text">Quick Access</span></div>
+            <h2 class="section-h2" style="margin-bottom:14px">How can we help?</h2>
+            <button class="quick-link" onclick="switchTab('book')">
+              <div class="ql-left"><span class="ql-emoji">👁</span><div><div class="ql-title">Book an Eye Test</div><div class="ql-sub">NHS & private available</div></div></div>
+              <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <button class="quick-link" onclick="switchTab('services')">
+              <div class="ql-left"><span class="ql-emoji">🔬</span><div><div class="ql-title">Our Services</div><div class="ql-sub">Explore what we offer</div></div></div>
+              <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <button class="quick-link" onclick="switchTab('contact')">
+              <div class="ql-left"><span class="ql-emoji">📍</span><div><div class="ql-title">Contact Us</div><div class="ql-sub">Call, email or find us</div></div></div>
+              <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          <!-- OptiSwiss -->
+          <div class="optiswiss-card">
+            <div class="os-label">Exclusive Bristol Partner</div>
+            <div class="os-title">OptiSwiss Lenses</div>
+            <div class="os-desc">Clifton Vision is the exclusive OptiSwiss lens provider in Bristol — Swiss-engineered precision crafted for your eyes.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ BOOK page ═══ -->
+      <div class="screen-page" id="page-book">
+        <!-- Header with steps -->
+        <div class="book-header">
+          <div class="eyebrow" style="margin-bottom:4px"><div class="eyebrow-line"></div><span class="eyebrow-text">New Appointment</span></div>
+          <h2 class="section-h2" style="font-size:1.55rem;margin-bottom:14px">Book Your Visit</h2>
+          <!-- Step indicators -->
+          <div class="step-row">
+            <div class="step-dot done" id="sd1">✓</div>
+            <div class="step-connector inactive" id="sc1"></div>
+            <div class="step-dot active" id="sd2">2</div>
+            <div class="step-connector inactive" id="sc2"></div>
+            <div class="step-dot inactive" id="sd3">3</div>
+            <div class="step-connector inactive" id="sc3"></div>
+            <div class="step-dot inactive" id="sd4">4</div>
+          </div>
+          <div class="step-labels">
+            <span class="step-label" id="sl1">Service</span>
+            <span class="step-label active" id="sl2">Date</span>
+            <span class="step-label" id="sl3">Details</span>
+            <span class="step-label" id="sl4">Confirm</span>
+          </div>
+        </div>
+
+        <!-- Step content -->
+        <div class="book-content" id="bookContent">
+
+          <!-- Step 1: Service type -->
+          <div id="step1" style="display:none">
+            <div class="step-title">Select Appointment Type</div>
+            <button class="appt-card" onclick="selectAppt('NHS Eye Examination','45 min')"><div class="ac-left"><span class="ac-emoji">👁</span><div><div class="ac-name">NHS Eye Examination</div><div class="ac-dur">45 min · Funded</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('Private Eye Examination','60 min')"><div class="ac-left"><span class="ac-emoji">🔬</span><div><div class="ac-name">Private Eye Examination</div><div class="ac-dur">60 min · £65</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('Contact Lens Fitting','45 min')"><div class="ac-left"><span class="ac-emoji">💧</span><div><div class="ac-name">Contact Lens Fitting</div><div class="ac-dur">45 min</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('Myopia Management','60 min')"><div class="ac-left"><span class="ac-emoji">👶</span><div><div class="ac-name">Myopia Management</div><div class="ac-dur">60 min</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('Dry Eye Clinic','45 min')"><div class="ac-left"><span class="ac-emoji">💡</span><div><div class="ac-name">Dry Eye Clinic</div><div class="ac-dur">45 min</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('Lumecca-I (IPL Therapy)','30 min')"><div class="ac-left"><span class="ac-emoji">✨</span><div><div class="ac-name">Lumecca-I (IPL Therapy)</div><div class="ac-dur">30 min</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('Forma-I (RF Therapy)','30 min')"><div class="ac-left"><span class="ac-emoji">⚡</span><div><div class="ac-name">Forma-I (RF Therapy)</div><div class="ac-dur">30 min</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('Post-Cataract Care','30 min')"><div class="ac-left"><span class="ac-emoji">🏥</span><div><div class="ac-name">Post-Cataract Care</div><div class="ac-dur">30 min</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button class="appt-card" onclick="selectAppt('Frame Styling Consultation','30 min')"><div class="ac-left"><span class="ac-emoji">🕶</span><div><div class="ac-name">Frame Styling Consultation</div><div class="ac-dur">30 min · Complimentary</div></div></div><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+          </div>
+
+          <!-- Step 2: Date & time -->
+          <div id="step2" class="fade-up">
+            <div class="step-title">Choose Date & Time</div>
+            <div class="selected-badge" id="selectedApptBadge">NHS Eye Examination</div>
+            <div class="form-label">Preferred Date *</div>
+            <input class="form-input" type="date" id="prefDate" />
+            <div class="form-label">Preferred Time</div>
+            <div class="time-grid" id="timeGrid">
+              <button class="time-btn" onclick="selectTime(this,'09:00')">09:00</button>
+              <button class="time-btn" onclick="selectTime(this,'09:30')">09:30</button>
+              <button class="time-btn" onclick="selectTime(this,'10:00')">10:00</button>
+              <button class="time-btn" onclick="selectTime(this,'10:30')">10:30</button>
+              <button class="time-btn" onclick="selectTime(this,'11:00')">11:00</button>
+              <button class="time-btn" onclick="selectTime(this,'11:30')">11:30</button>
+              <button class="time-btn" onclick="selectTime(this,'12:00')">12:00</button>
+              <button class="time-btn" onclick="selectTime(this,'12:30')">12:30</button>
+              <button class="time-btn" onclick="selectTime(this,'14:00')">14:00</button>
+              <button class="time-btn" onclick="selectTime(this,'14:30')">14:30</button>
+              <button class="time-btn" onclick="selectTime(this,'15:00')">15:00</button>
+              <button class="time-btn" onclick="selectTime(this,'15:30')">15:30</button>
+              <button class="time-btn" onclick="selectTime(this,'16:00')">16:00</button>
+              <button class="time-btn" onclick="selectTime(this,'16:30')">16:30</button>
+              <button class="time-btn" onclick="selectTime(this,'17:00')">17:00</button>
+            </div>
+            <div class="form-label">Patient Type</div>
+            <select class="form-input" id="patientType">
+              <option value="">Please select…</option>
+              <option>New Patient</option>
+              <option>Existing Patient</option>
+            </select>
+          </div>
+
+          <!-- Step 3: Details -->
+          <div id="step3" style="display:none">
+            <div class="step-title">Your Details</div>
+            <div class="form-row-2">
+              <div><div class="form-label">First Name *</div><input class="form-input" type="text" id="firstName" placeholder="Jane" style="margin-bottom:0"/></div>
+              <div><div class="form-label">Last Name *</div><input class="form-input" type="text" id="lastName" placeholder="Smith" style="margin-bottom:0"/></div>
+            </div>
+            <div style="margin-top:14px"><div class="form-label">Email Address *</div><input class="form-input" type="email" id="emailAddr" placeholder="jane@example.com"/></div>
+            <div><div class="form-label">Phone Number *</div><input class="form-input" type="tel" id="phoneNum" placeholder="07700 000000"/></div>
+            <div><div class="form-label">Additional Notes</div><textarea class="form-input" id="apptNotes" placeholder="Anything we should know…"></textarea></div>
+          </div>
+
+          <!-- Step 4: Confirm -->
+          <div id="step4" style="display:none">
+            <div class="step-title">Review Your Booking</div>
+            <div class="confirm-card" id="confirmCard">
+              <!-- filled by JS -->
+            </div>
+            <div class="confirm-note">By confirming, you consent to Clifton Vision using your details to arrange this appointment. We will confirm within one working day.</div>
+          </div>
+
+        </div>
+
+        <!-- Nav buttons -->
+        <div class="book-nav" id="bookNav">
+          <button class="btn-back" id="btnBack" onclick="bookBack()" style="display:none">Back</button>
+          <button class="btn-next" id="btnNext" onclick="bookNext()">Continue</button>
+        </div>
+      </div>
+
+      <!-- Success overlay inside book page -->
+      <div class="screen-page" id="page-success">
+        <div class="success-screen">
+          <div class="success-icon">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div>
+            <h2 class="success-h">Request Sent!</h2>
+            <p class="success-p" id="successMsg">Thank you. We'll be in touch within one working day to confirm your appointment.</p>
+          </div>
+          <div class="success-summary">
+            <div class="ss-label">Appointment Summary</div>
+            <div class="ss-line" id="successSummary">—</div>
+          </div>
+          <button class="btn-outline" onclick="bookAgain()">Book Another</button>
+        </div>
+      </div>
+
+      <!-- ═══ SERVICES page ═══ -->
+      <div class="screen-page" id="page-services">
+        <div class="screen-body">
+          <div class="services-header">
+            <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">What We Offer</span></div>
+            <h2 class="section-h2">Complete Eye Care</h2>
+            <p style="font-size:.82rem;font-weight:300;color:#8a9bb5;line-height:1.7;margin-top:6px;margin-bottom:2px">A full spectrum of vision and eye health services for the whole Bristol community.</p>
+          </div>
+          <div class="service-item"><span class="svc-emoji">👁</span><div><div class="svc-title">NHS Eye Examinations</div><div class="svc-desc">Fully funded NHS sight tests for eligible patients, with thorough assessments of vision and eye health.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">🔬</span><div><div class="svc-title">Private Eye Examinations</div><div class="svc-desc">Advanced diagnostics including retinal imaging and detailed assessment of eye health conditions.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">🕶</span><div><div class="svc-title">Designer Eyewear</div><div class="svc-desc">Curated collection from everyday essentials to statement designer pieces, fitted with precision.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">💧</span><div><div class="svc-title">Contact Lens Fitting</div><div class="svc-desc">Full fitting service including complex prescriptions, specialist lenses for dry eye and keratoconus.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">👶</span><div><div class="svc-title">Myopia Management</div><div class="svc-desc">Evidence-based techniques to slow myopia progression and protect long-term vision.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">💡</span><div><div class="svc-title">Dry Eye Clinic</div><div class="svc-desc">Specialist diagnosis and management using the latest diagnostic tools and proven treatment plans.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">✨</span><div><div class="svc-title">Lumecca-I (IPL Therapy)</div><div class="svc-desc">Intense Pulsed Light therapy to reduce vascular inflammation and treat ocular surface disease.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">⚡</span><div><div class="svc-title">Forma-I (RF Therapy)</div><div class="svc-desc">Bipolar Radiofrequency therapy targeting meibomian glands, improving dry eye whilst stimulating collagen.</div></div></div>
+          <div class="service-item"><span class="svc-emoji">🏥</span><div><div class="svc-title">Post-Cataract Care</div><div class="svc-desc">Expert post-operative follow-up and optimisation of vision following cataract surgery.</div></div></div>
+          <div class="book-cta-bar">
+            <button class="btn-gold" style="width:100%;justify-content:center" onclick="switchTab('book')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              Book an Appointment
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ CONTACT page ═══ -->
+      <div class="screen-page" id="page-contact">
+        <div class="screen-body">
+          <div class="contact-header">
+            <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">Get in Touch</span></div>
+            <h2 class="section-h2">Contact Us</h2>
+            <p style="font-size:.82rem;font-weight:300;color:#8a9bb5;line-height:1.7;margin-top:6px">We'd love to hear from you. Visit, call or email us.</p>
+          </div>
+          <div class="contact-item">
+            <div class="ci-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><div class="ci-label">Address</div><div class="ci-value">174 Whiteladies Road
+Clifton, Bristol BS8 2XU</div></div>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="contact-item">
+            <div class="ci-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div><div class="ci-label">Opening Hours</div><div class="ci-value">Mon–Fri: 09:00 – 17:30
+Saturday: 09:00 – 14:00
+Sunday: Closed</div></div>
+          </div>
+          <div class="contact-item">
+            <div class="ci-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.06 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg></div>
+            <div><div class="ci-label">Telephone</div><div class="ci-value">0117 000 0000</div></div>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="contact-item">
+            <div class="ci-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+            <div><div class="ci-label">Email</div><div class="ci-value">info@cliftonvision.co.uk</div></div>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f0e8" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="map-tile">
+            <div style="font-size:1.8rem">🗺</div>
+            <div style="font-size:.8rem;color:#8a9bb5;font-weight:300">Open in Maps</div>
+            <div style="font-size:.7rem;color:#8a9bb5;opacity:.6">174 Whiteladies Road, Clifton</div>
+          </div>
+          <div class="reg-footer">
+            <div class="gold-line" style="margin-bottom:12px"></div>
+            <div class="reg-text">Company Registration No. 17182993<br>VAT Registration No. 519 1537 87<br>Registered Opticians · GOS Provider · © 2026 Clifton Vision</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom nav -->
+      <div class="bottom-nav">
+        <button class="nav-btn active" id="nav-home" onclick="switchTab('home')">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <span>Home</span>
+        </button>
+        <button class="nav-btn" id="nav-book" onclick="switchTab('book')">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="16" r="1.5" fill="currentColor"/></svg>
+          <span>Book</span>
+        </button>
+        <button class="nav-btn" id="nav-services" onclick="switchTab('services')">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Services</span>
+        </button>
+        <button class="nav-btn" id="nav-contact" onclick="switchTab('contact')">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.06 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+          <span>Contact</span>
+        </button>
+      </div>
+
+    </div><!-- /screen-root -->
+  </div><!-- /screen -->
+</div><!-- /phone-wrap -->
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toastIcon">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="toastSvg"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div class="toast-body"><strong id="toastTitle"></strong><span id="toastMsg"></span></div>
+</div>
+
+<div class="legend">
+  <p><strong>Fully interactive demo</strong> — tap the bottom navigation to explore all screens. Use <strong>Book</strong> to walk through the full 4-step appointment booking wizard. All 9 services, contact details and the booking form are included.</p>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const state = {
+  tab: 'home',
+  bookStep: 2,          // default to step 2 for demo (step 1 shows on first visit)
+  apptType: 'NHS Eye Examination',
+  time: '',
+  firstName:'', lastName:'', email:'', phone:'', notes:'',
+  date:'', patientType:'',
+};
+
+// ── Clock ─────────────────────────────────────────────────────────────────
+function updateClock(){
+  const now = new Date();
+  let h=now.getHours(), m=now.getMinutes();
+  document.getElementById('statusTime').textContent = h+':'+(m<10?'0'+m:m);
+}
+updateClock(); setInterval(updateClock,10000);
+
+// ── Set min date ──────────────────────────────────────────────────────────
+document.getElementById('prefDate').min = new Date().toISOString().split('T')[0];
+
+// ── Tab switching ─────────────────────────────────────────────────────────
+const TABS = ['home','book','services','contact'];
+function switchTab(tab){
+  state.tab = tab;
+  TABS.forEach(t => {
+    const page = document.getElementById('page-'+t);
+    const nav  = document.getElementById('nav-'+t);
+    if(page){ page.classList.toggle('active', t===tab); }
+    if(nav){ nav.classList.toggle('active', t===tab); }
+  });
+  // When switching to book, show step 1
+  if(tab==='book'){
+    document.getElementById('page-success').classList.remove('active');
+    document.getElementById('page-book').classList.add('active');
+    goToStep(1);
+  }
+  document.getElementById('screen').querySelector('.screen-body:not([id])') && document.getElementById('screen').querySelector('.screen-body').scrollTo(0,0);
+}
+
+// ── Book wizard ───────────────────────────────────────────────────────────
+let currentStep = 1;
+
+function goToStep(n){
+  currentStep = n;
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById('step'+i);
+    if(el) el.style.display = (i===n) ? 'block' : 'none';
+  });
+
+  // Update step dots
+  [1,2,3,4].forEach(i => {
+    const dot = document.getElementById('sd'+i);
+    const lbl = document.getElementById('sl'+i);
+    dot.className = 'step-dot ' + (i<n?'done':i===n?'active':'inactive');
+    dot.textContent = i<n ? '✓' : i;
+    if(lbl){ lbl.className = 'step-label' + (i===n?' active':''); }
+  });
+  [1,2,3].forEach(i => {
+    const con = document.getElementById('sc'+i);
+    if(con) con.className = 'step-connector ' + (i<n?'done':'inactive');
+  });
+
+  // Back button
+  document.getElementById('btnBack').style.display = n>1 ? 'block' : 'none';
+
+  // Next button text
+  const btn = document.getElementById('btnNext');
+  if(n===4){ btn.textContent = 'Confirm Booking'; }
+  else if(n===3){ btn.textContent = 'Review Booking'; }
+  else { btn.textContent = 'Continue'; }
+
+  // Scroll to top
+  document.getElementById('bookContent').scrollTo({top:0,behavior:'smooth'});
+
+  // Fill confirm card
+  if(n===4) fillConfirm();
+}
+
+function selectAppt(name){
+  state.apptType = name;
+  document.getElementById('selectedApptBadge').textContent = name;
+  goToStep(2);
+}
+
+function selectTime(btn, t){
+  state.time = (state.time === t) ? '' : t;
+  document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+  if(state.time) btn.classList.add('selected');
+}
+
+function bookNext(){
+  if(currentStep===1){
+    goToStep(2); return;
+  }
+  if(currentStep===2){
+    const d = document.getElementById('prefDate').value;
+    if(!d){ showToast('error','Date Required','Please select your preferred date.'); return; }
+    state.date = d;
+    state.patientType = document.getElementById('patientType').value;
+    goToStep(3); return;
+  }
+  if(currentStep===3){
+    const fn = document.getElementById('firstName').value.trim();
+    const ln = document.getElementById('lastName').value.trim();
+    const em = document.getElementById('emailAddr').value.trim();
+    const ph = document.getElementById('phoneNum').value.trim();
+    if(!fn||!ln||!em||!ph){ showToast('error','Missing Details','Please fill in all required fields.'); return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ showToast('error','Invalid Email','Please enter a valid email address.'); return; }
+    state.firstName=fn; state.lastName=ln; state.email=em; state.phone=ph;
+    state.notes = document.getElementById('apptNotes').value.trim();
+    goToStep(4); return;
+  }
+  if(currentStep===4){
+    submitBooking();
+  }
+}
+
+function bookBack(){
+  if(currentStep>1) goToStep(currentStep-1);
+}
+
+function fillConfirm(){
+  const dateStr = state.date
+    ? new Date(state.date+'T12:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
+    : '—';
+  const rows = [
+    ['Appointment', state.apptType],
+    ['Date',        dateStr],
+    ['Time',        state.time||'No preference'],
+    ['Patient',     state.patientType||'Not specified'],
+    ['Name',        state.firstName+' '+state.lastName],
+    ['Email',       state.email],
+    ['Phone',       state.phone],
+    ...(state.notes?[['Notes',state.notes]]:[]),
+  ];
+  const html = rows.map((r,i) =>
+    `<div class="confirm-row"${i>0?` style="border-top:1px solid rgba(201,168,76,.1)"`:''}><span class="cr-label">${r[0]}</span><span class="cr-value">${r[1]}</span></div>`
+  ).join('');
+  document.getElementById('confirmCard').innerHTML = html;
+}
+
+function submitBooking(){
+  // Simulate sending (no real network call in demo)
+  const btn = document.getElementById('btnNext');
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Sending…';
+
+  setTimeout(()=>{
+    btn.disabled = false;
+    btn.textContent = 'Confirm Booking';
+    // Show success
+    document.getElementById('page-book').classList.remove('active');
+    document.getElementById('page-success').classList.add('active');
+    const dateStr = state.date
+      ? new Date(state.date+'T12:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})
+      : '';
+    document.getElementById('successMsg').textContent =
+      `Thank you, ${state.firstName}. We'll be in touch within one working day to confirm your ${state.apptType}.`;
+    document.getElementById('successSummary').innerHTML =
+      `${state.apptType}<br>${dateStr}${state.time?' · '+state.time:''}`;
+    showToast('success','Booking Sent!',`We'll confirm your ${state.apptType} within one working day.`);
+  }, 1800);
+}
+
+function bookAgain(){
+  // Reset
+  state.apptType='NHS Eye Examination'; state.time=''; state.date='';
+  state.firstName=''; state.lastName=''; state.email=''; state.phone=''; state.notes='';
+  ['firstName','lastName','emailAddr','phoneNum','apptNotes'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('prefDate').value='';
+  document.getElementById('patientType').selectedIndex=0;
+  document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('page-success').classList.remove('active');
+  document.getElementById('page-book').classList.add('active');
+  goToStep(1);
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(type, title, msg){
+  clearTimeout(toastTimer);
+  const toast = document.getElementById('toast');
+  const icon  = document.getElementById('toastIcon');
+  const svg   = document.getElementById('toastSvg');
+  toast.className = 'toast '+type;
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastMsg').textContent   = msg;
+  if(type==='error'){
+    svg.innerHTML='<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+  } else {
+    svg.innerHTML='<polyline points="20 6 9 17 4 12"/>';
+  }
+  toast.classList.add('show');
+  toastTimer = setTimeout(()=>toast.classList.remove('show'),5000);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+goToStep(1);
+document.getElementById('selectedApptBadge').textContent = state.apptType;
+
+// Trap toast inside phone shell visually
+const phoneWrap = document.querySelector('.phone-wrap');
+const toastEl   = document.getElementById('toast');
+// Move toast inside screen element for proper clipping
+document.getElementById('screen').appendChild(toastEl);
+
+// Add spin keyframe
+const style = document.createElement('style');
+style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(style);
+</script>
+</body>
+</html>
